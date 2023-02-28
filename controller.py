@@ -7,6 +7,9 @@
 from bottle import route, get,post, request, redirect ,static_file
 import model
 import time
+from myapp import app
+
+
 #-----------------------------------------------------------------------------
 # Static file paths
 #-----------------------------------------------------------------------------
@@ -28,6 +31,7 @@ def serve_pictures(picture):
 #-----------------------------------------------------------------------------
 
 # Allow CSS
+@app.route('/css/<css:path>')
 @route('/css/<css:path>')
 def serve_css(css):
     '''
@@ -44,6 +48,7 @@ def serve_css(css):
 #-----------------------------------------------------------------------------
 
 # Allow javascript
+@app.route('/js/<js:path>')
 @route('/js/<js:path>')
 def serve_js(js):
     '''
@@ -76,22 +81,25 @@ def serve_js(js):
 #     return model.populartweet(worldtrend,tag,tr)
 
 
+
+@app.get('/')
+@app.get('/home')
 @get('/')
 @get('/home')
 def home():
 
     # Handle right panel
-    return model.home("harry","abc")
+    return model.home()
     # return static_file("hashtagtrend v2.html", root = "templates/")
 
-
+@app.get('/register')
 @get('/register')
 def registerpage():
 
     return model.registerpage()
 
 
-
+@app.post('/register')
 @post('/register')
 def register():
     dat=request.forms
@@ -102,14 +110,21 @@ def register():
     return model.register(username,password)
 
 
-
+@app.get('/login')
 @get('/login')
 def loginpage():
 
     return model.loginpage()
 
 
+@app.get('/logout')
+@get('/logout')
+def logoutpage():
 
+    return model.logout()
+
+
+@app.post('/login')
 @post('/login')
 def login():
     dat=request.forms
@@ -123,27 +138,26 @@ def login():
     
 
 
-
+@app.get('/userprofile')
 @get('/userprofile')
 def userprofile():
 
-    cookie_value = request.get_cookie("user_name")
-    if cookie_value==None:
-        return model.home("defaultname",".....")
-    else:
-        return model.home("harry","abc")
 
 
+    # cookie_value = request.get_cookie("user_name")
+    # if cookie_value==None:
+    #     return model.home("visitor","pass_data")
+    # else:
+    #     return model.home(cookie_value,"pass_data")
 
 
-# @post('/')
-# @post('/home')
-# def home_login():
-#     return model.home("harry","a")
+    return model.user_profile()
+
 
 
 
 # Handle left panel
+@app.get('/recommend_game_of_certain_type')
 @get('/recommend_game_of_certain_type')
 def recommend_game_of_type():
     
@@ -151,37 +165,3 @@ def recommend_game_of_type():
     gametype=request.query.get("gametype")
     return model.recommend_game_of_certain_type(username,gametype)
 
-# @get('/trend')
-# def get_hashtagtrend():
-#     value = request.query.value
-#     value = 10 if not value else value
-#     tag=request.query.tag
-#     tag = "bitcoin" if not tag else tag
-#     t=request.query.time
-#     t = 168 if not t else t
-#     keyword=request.query.keyword
-#     #when the page search the rank of certain hastag
-#     if keyword!="":
-#         return model.result("bitcoin",t,keyword)
-        
-#     return model.hashtagtrend(value,tag,t)
-
-
-
-
-# @get('/pricegraph')
-# def get_pricegraph():
-#     t=request.query.time
-#     print("timerange:{}".format(t))
-#     if t=="":
-#         t="60"
-#     return model.pricegraph(t)
-
-
-
-
-
-# @get('/showtrend')
-# def showtrend():
-
-#     return model.showtrend("gg")

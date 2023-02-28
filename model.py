@@ -39,16 +39,33 @@ else:
 
 
 
-def home(username="",recommend_type_for_user=""):
+def home():
 
-    username=username
+    # username=username
     
     
     # Modify here to generate string in html format can be then be upload
-    #  
-    recommend_type_for_user=recommend_type_for_user
-    print("A")
-    return page_view("home",username=username,recommend_game_of_certain_type=recommend_type_for_user)
+
+
+    if is_valid_session():
+        session_id=request.get_cookie('session_id')
+        print(database.retrieve_session_data(session_id)['username'])
+        print("!")
+        username=database.retrieve_session_data(session_id)['username']
+    
+
+        # Get what user like and return
+        
+
+        return page_view("home",username=username,recommend_game_of_all_type="game1 game2 game3 in html form",recommend_type="cate1,cate2,cate3 in html form")
+        
+        
+    
+    else:
+
+        return page_view("home",username="visitor",recommend_game_of_all_type="Default game for visitor",recommend_type="default cate in html form")
+
+
 
 
 
@@ -60,7 +77,12 @@ def recommend_game_of_certain_type(username,gametype):
     # Define a Python dictionary
     dat=[]
 
-    if username=="harry" and gametype=="ACT":
+
+    print(gametype)
+
+
+
+    if gametype=="ACT":
         dat = [
             {
                 "rank": "1",
@@ -85,6 +107,32 @@ def recommend_game_of_certain_type(username,gametype):
             }
 
         ]
+    elif gametype==None:
+        dat = [
+            {
+                "rank": "1",
+                "name": "(Type: all)Most popular game 1 for visitor",
+                "description": "Hard game",
+                "pop":"90",
+                "url":"https://google.com"
+            },
+            {
+                "rank": "2",
+                "name": "(Type: all) Most popular game 2 for visitor",
+                "description": "Another Hard game",
+                "pop":"60",
+                "url":"https://google.com"
+            },
+            {
+                "rank": "3",
+                "name": "(Type: all) Most popular game 3 for visitor",
+                "description": "Very Hard game",
+                "pop":"30",
+                "url":"https://google.com"
+            }
+
+        ]
+
 
 
     # Convert the Python dictionary to a JSON object
@@ -151,7 +199,7 @@ def is_valid_session():
 
     if session_expiry_time and session_expiry_time < datetime.datetime.now():
         # Remove the expired session from the session data store
-        database.remove_session_data(session_id)
+        database.remove_session_data_by_session_id(session_id)
         return False
 
     # If the session is valid, update the expiry time
@@ -208,7 +256,20 @@ def login(username,password):
 
 
 
+def logout():
+    response.delete_cookie('session_id')
+    redirect("/home")
 
+
+def user_profile():
+    if is_valid_session():
+        session_id=request.get_cookie('session_id')
+        print(database.retrieve_session_data(session_id)['username'])
+        username=database.retrieve_session_data(session_id)['username']
+    
+        return page_view("profile",username=username,recommend_type_for_user="pass_data")
+    else:
+        redirect("/home")
 
 
 

@@ -18,7 +18,7 @@ a {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Bitcoin prediction</title>
+    <title>BroaadgameGeek Recommend System</title>
     <link rel="stylesheet" href="css/home.css">
 </head>
 
@@ -71,7 +71,7 @@ a {
         <!-- table -->
         <div class="responseData">
             <div class="cardHeader">
-                <h2>Recommend Items</h2>
+                <h2>Recommend Items for ${username}</h2>
                 <label>
                     <span class="icon">
                         <ion-icon name="remove-outline"></ion-icon>
@@ -118,6 +118,8 @@ a {
                         <td></td>
                     </tr>
 
+                    <!-- othergameforotheruser -->
+                    ${recommend_game_of_all_type}
 
                 </tbody>
             </table>
@@ -128,14 +130,14 @@ a {
         <!-- top ranks -->
         <div class="rankingDesc">
             <div class="cardHeader">
-                <h2>Top recommend type of game</h2>
+                <h2>Top recommend game type of ${username}</h2>
             </div>
             <table>
 
 
                 <tr>
                     <td>
-                    ${recommend_game_of_certain_type}
+                    ${recommend_type}
                     </td>
                 </tr>
 
@@ -226,6 +228,8 @@ a {
         document.querySelectorAll('.rankingDesc table tr td a').forEach(a=>{
             a.addEventListener('click', function(e){
                 e.preventDefault()
+                // let tbody2 = document.querySelector(".responseData table tbody");
+                // tbody2.innerHTML = "";
             })
         });
 

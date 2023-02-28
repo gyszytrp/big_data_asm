@@ -15,8 +15,8 @@
 #-----------------------------------------------------------------------------
 
 import sys
-from bottle import run
-
+from bottle import run,request,route,run,static_file
+from myapp import app
 #-----------------------------------------------------------------------------
 # You may eventually wish to put these in their own directories and then load 
 # Each file separately
@@ -26,59 +26,49 @@ from bottle import run
 import model
 import view
 import controller
-
+import cherrypy
+        
 #-----------------------------------------------------------------------------
 
 # It might be a good idea to move the following settings to a config file and then load them
 # Change this to your IP address or 0.0.0.0 when actually hosting
-host = 'localhost'
+host = '0.0.0.0'
 
 # Test port, change to the appropriate port to host
-port = 7890
+port = 443
 
 # Turn this off for production
 debug = True
 
-def run_server():    
-    '''
-        run_server
-        Runs a bottle server
-    '''
-    run(host=host, port=port, debug=debug)
 
 
 
-#-----------------------------------------------------------------------------
 
-# What commands can be run with this python file
-# Add your own here as you see fit
 
-command_list = {
-    'server'       : run_server
-}
+@app.route('/getkeyword')
+def gettarget():
+    value=request.query.value
+    print(value)
+    model.showtrend(value)
 
-# The default command if none other is given
-default_command = 'server'
 
-def run_commands(args):
-    '''
-        run_commands
-        Parses arguments as commands and runs them if they match the command list
 
-        :: args :: Command line arguments passed to this function
-    '''
-    commands = args[1:]
 
-    # Default command
-    if len(commands) == 0:
-        commands = [default_command]
 
-    for command in commands:
-        if command in command_list:
-            command_list[command]()
-        else:
-            print("Command '{command}' not found".format(command=command))
 
-#-----------------------------------------------------------------------------
+cherrypy.tree.graft(app,"/")
+cherrypy.server.unsubscribe()
+server=cherrypy._cpserver.Server()
+server.socket_host="0.0.0.0"
+server.socket_port=443
+server.ssl_certificate="server.crt"
+server.ssl_private_key="server.key"
+server.thread_pool=1
+server.subscribe()
+try:
+    cherrypy.engine.start()
+    cherrypy.engine.block()
+except KeyboardInterrupt:
+    cherrypy.engine.stop()
 
-run_commands(sys.argv)
+
