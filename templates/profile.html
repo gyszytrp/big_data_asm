@@ -521,9 +521,13 @@
     <script src="https://unpkg.com/ionicons@5.0.0/dist/ionicons.js"></script>
 
     <script>
+
       const saveBtn = document.getElementById('save-btn');
+
+
       saveBtn.addEventListener('click', function() {
           // Get the user's selected interests
+          event.preventDefault();
           const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(input => input.value);
           const selectedRatings = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(input => input.value);
           const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platform"]:checked')).map(input => input.value);
@@ -533,121 +537,37 @@
           // Save the user's selected interests to the database
           // ...
 
-          window.alert("Selected:"+selectedGenres+","+selectedRatings);
+          
+          const option= selectedGenres ; 
+          // Send data to backend
+
+
+          const data = {
+            option: "John",
+            age: 30,
+            a: option
+          };
+
+          fetch('/profile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => {
+            console.log('Data sent successfully:', response);
+          })
+          .catch(error => {
+            console.error('Error sending data:', error);
+          });
+
+
+
+
       });
   </script>
 
-
-  <script>
-
-
-
-        
-
-        // document.querySelectorAll('.rankingDesc table tr td a').forEach(a=>{
-        //     a.addEventListener('click', function(e){
-        //         e.preventDefault()
-        //         // let tbody2 = document.querySelector(".responseData table tbody");
-        //         // tbody2.innerHTML = "";
-        //     })
-        // });
-
-        // let cards2 = document.querySelectorAll(".rankingDesc table tr td");
-        // cards2.forEach(card2 => {
-        //     card2.onclick = () => {
-        //         // toggle css
-        //         if (!card2.classList.contains("active")) {
-        //             card2.classList.toggle('active');
-        //             cards2.forEach(cardCss => {
-        //                 if (cardCss != card2)
-        //                     cardCss.classList.remove("active")
-        //             })
-        //         }
-
-
-
-        //         // change title in Rankings
-        //         document.querySelector('.cardHeader label').innerHTML = card2.querySelector("h4").innerHTML;
-        //         // request json
-        //         promiseReq('GET', card2.querySelector("a").href)
-        //     }
-        // })
-
-
-
-
-
-
-        /*
-        The rendered table. It reads the hidden DIV which is a list of
-        dictionary containing {rank, name, amount, pop, link}
-        */
-    //     const promiseReq = (method, url) => {
-    //         return new Promise(function (resolve, reject) {
-    //             var xhr = new XMLHttpRequest();
-    //             xhr.open(method, url);
-    //             xhr.onload = function () {
-    //                 if (this.status >= 200 && this.status < 300) {
-    //                     var tableData = JSON.parse(xhr.response);
-                        
-    //                     let tbody = document.querySelector(".responseData table tbody");
-    //                     tbody.innerHTML = "";
-    //                     tableData.forEach(row => {
-    //                         let appendRow = `<tr><td>${row.rank}</td>
-    //                         <td>${row.name}</td>
-    //                         <td>${row.description}</td>`;
-
-
-    //                         let popularity = parseFloat(row.pop) / 100;
-    //                         let popEl = document.createElement("span");
-    //                         popEl.innerHTML = row.pop+"%";
-    //                         popEl.classList.add("status");
-    //                         if (popularity >= 0.7) {
-    //                             popEl.classList.add("high");
-    //                         }
-    //                         else if (popularity >= 0.4) {
-    //                             popEl.classList.add("medium");
-    //                         }
-    //                         else if (popularity < 0.4) {
-    //                             popEl.classList.add("low");
-    //                         }
-    //                         appendRow += `<td>${popEl.outerHTML}</td>
-    //                         <td>${row.url}</td></tr>`;
-    //                         tbody.innerHTML += appendRow;
-    //                     })
-                        
-    //                     // click on the row to navigate to the link
-    //                     tbody.querySelectorAll("tr").forEach(row => {
-    //                         row.addEventListener("click", function (e) {//e.currentTarget === this
-    //                             window.open(this.lastChild.innerText)
-    //                         })
-    //                     });
-    //                     console.log(`Reload the table for ${url}`);
-    //                     resolve()
-    //                 } else {
-    //                     reject({
-    //                         status: this.status,
-    //                         statusText: xhr.statusText
-    //                     });
-    //                 }
-    //             };
-    //             xhr.onerror = function () {
-    //                 reject({
-    //                     status: this.status,
-    //                     statusText: xhr.statusText
-    //                 });
-    //             };
-    //             xhr.send();
-
-    //         });
-    //     }
-
-
-    //     // handle trend
-    //     promiseReq('GET', "/userprofile")
-        
-
-    // </script>
 
 
 

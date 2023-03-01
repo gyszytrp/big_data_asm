@@ -105,8 +105,6 @@ def register():
     dat=request.forms
     username=dat['name']
     password=dat['password']
-    print(username,password)
-    print("tuple")
     return model.register(username,password)
 
 
@@ -130,8 +128,7 @@ def login():
     dat=request.forms
     username=dat['name']
     password=dat['password']
-    # print(username,password)
-    # print("tuple")
+
 
     model.login(username,password)
 
@@ -154,9 +151,30 @@ def userprofile():
     return model.user_profile()
 
 
+@app.post('/profile')
+@post('/profile')
+def get_preference_from_profile():
+
+    # option = request.forms['option']
+    # session = request.forms.get('session')
 
 
-# Handle left panel
+    # print(option,session)
+
+    # print("!")
+
+    data = request.json
+    print(data) # {'name': 'John', 'age': 30}
+
+    # then input data to model
+
+
+
+
+
+
+
+
 @app.get('/recommend_game_of_certain_type')
 @get('/recommend_game_of_certain_type')
 def recommend_game_of_type():
