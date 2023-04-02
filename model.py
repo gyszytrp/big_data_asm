@@ -33,6 +33,12 @@ else:
     database = sql.SQLDatabase("./temp.db")
 
 
+    # If need more table, then run below code depend on different case
+    # database.database_construct_login_part()
+    database.database_reconstruct_login_part()
+
+
+
 
 
 
@@ -141,6 +147,83 @@ def recommend_game_of_certain_type(username,gametype):
 
     return dat2
 
+def search(keyword):
+
+    attributelist=database.view_attribute("Games_Feture_Engineering")
+
+
+
+    attrdict={}
+
+    for i in attributelist:
+
+        attrdict[i[1]]=i[0]
+
+
+
+    result=database.get_game(keyword)
+
+    merchant_list=""
+
+    if result!=False:
+
+
+        
+
+        for i in result:
+            concatels=["<div class='"'merchant'"' onclick='"'showgame(this)'"'>",
+                       "<img src='"'{}'"' alt='"'Merchant Image'"'>".format(i[attrdict['ImagePath']]),
+                       "<div>"+"<h3>{}</h3>".format(i[attrdict['Name']]),
+                       "<p>{}</p>".format(i[attrdict['Description']])
+                       ,"</div>"+"</div>"]
+            merchant_list=merchant_list+' '.join(concatels)
+
+
+        return page_view("search_result",merchant_list=merchant_list)
+    
+    else:
+        return page_view("search_result",merchant_list=merchant_list)
+    
+
+
+
+
+
+
+
+def showgame(gamename):
+
+    attributelist=database.view_attribute("Games_Feture_Engineering")
+
+
+
+    attrdict={}
+
+    for i in attributelist:
+
+        attrdict[i[1]]=i[0]
+
+
+
+    result=database.get_specific_game(gamename)
+
+
+    if result!=False:
+        print(result)
+
+        
+        picture_path="<img src=\" "+result[attrdict['ImagePath']]+"\" alt='"'Game Image'"'>"
+
+
+
+        return page_view("game",Name=gamename,picture_path=picture_path,Description=result[attrdict['Description']]
+                         ,MinPlayers=result[attrdict['MinPlayers']],YearPublished=result[attrdict['YearPublished']]
+                         ,MaxPlayers=result[attrdict['MaxPlayers']])
+    
+    else:
+        return page_view("game")
+
+
 
 
 
@@ -151,10 +234,16 @@ def registerpage():
 
 
 def register(username,password):
-    database.add_u(username,password)
 
+    if database.check_u_register(username)==False:
 
-    return page_view("home")
+        database.add_u(username,password)
+    else:
+        print("Username already registered! Try again!")
+
+        return page_view("register")
+
+    return page_view("home",username="vistor")
 
 
 

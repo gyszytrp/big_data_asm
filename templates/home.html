@@ -59,8 +59,8 @@ a {
             </div>
             <!-- top search bar -->
             <div class="search">
-                <input type="text" placeholder="#Civilization6">
-                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" id="searchBar1" placeholder="#Civilization6">
+                    <ion-icon name="search-outline"></ion-icon>
             </div>
         </div>
     </div>
@@ -198,7 +198,19 @@ a {
     <script src="https://unpkg.com/ionicons@5.0.0/dist/ionicons.js"></script>
     <script>
 
+        function search() {
+        var searchBar = document.getElementById("searchBar1");
+        var searchTerm = searchBar.value;
+        if (searchTerm.trim() !== "") {
+            window.location.href = "/search?keyword=" + searchTerm;
+        }
+        }
 
+        document.getElementById("searchBar1").addEventListener("keypress", function(event) {
+        if (event.keyCode === 13) {
+            search();
+        }
+        });
         // stop the a redirection
         // document.querySelectorAll('.navigator ul li a').forEach(a=>{
         //     a.addEventListener('click', function(e){

@@ -65,20 +65,19 @@ def serve_js(js):
 
 
 
-# @get('/populartweet')
-# def get_populartweet():
-#     worldtrend=request.query.worldtrend
-#     tag=request.query.tag
-#     tr=request.query.time
-#     if not worldtrend and not tr and not tag:
-#         return static_file("populartweet.html", root = "templates/")
-#     if not worldtrend:
-#         worldtrend="bitcoin"
-#     if not tag:
-#         tag="bitcoin"
-#     if not tr:
-#         tr=168
-#     return model.populartweet(worldtrend,tag,tr)
+@get('/search')
+def search():
+    keyword=request.query.keyword
+
+    return model.search(keyword)
+
+
+
+@get('/showgame')
+def showgame():
+    gamename=request.query.gamename
+
+    return model.showgame(gamename)
 
 
 
