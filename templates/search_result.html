@@ -17,6 +17,7 @@
 				<img src="https://picsum.photos/id/1015/50/50" alt="Merchant Image">
 				<div>
 					<h3>Merchant Name</h3>
+					<h2 style="display: none;">BGG Id </h2>
 					<p>Description of the merchant goes here.</p>
 				</div>
 			</div>
@@ -24,6 +25,7 @@
 				<img src="https://picsum.photos/id/1025/50/50" alt="Merchant Image">
 				<div>
 					<h3>Merchant Name</h3>
+					<h2 style="display: none;">BGG Id </h2>
 					<p>Description of the merchant goes here.</p>
 				</div>
 			</div>
@@ -31,6 +33,7 @@
 				<img src="https://picsum.photos/id/1035/50/50" alt="Merchant Image">
 				<div>
 					<h3>Merchant Name</h3>
+					<h2 style="display: none;">BGG Id </h2>
 					<p>Description of the merchant goes here.</p>
 				</div>
 			</div>
@@ -70,7 +73,7 @@ function buttonsearch() {
 
 
 function showgame(div) {
-  var headerText = div.querySelector("h3").innerHTML;
-  window.location.href = "/showgame?gamename=" + headerText;
+  var headerText = div.querySelector("h2").innerHTML;
+  window.location.href = "/showgame?gameid=" + headerText;
 }
 </script>

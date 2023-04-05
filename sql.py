@@ -295,8 +295,8 @@ class SQLDatabase():
             return False
 
 
-    def get_specific_game(self,keyword):
-        query = "SELECT * FROM Games_Feture_Engineering WHERE Name = ?"
+    def get_specific_game_by_gameid(self,keyword):
+        query = "SELECT * FROM Games_Feture_Engineering WHERE BGGId = ?"
         params = ('{}'.format(keyword),)
 
         self.cur.execute(query, params)
@@ -310,6 +310,25 @@ class SQLDatabase():
             return False
 
 
+
+    def select_top_n_game_by_column(self,column,top_n,):
+
+        query = "SELECT * FROM Games_Feture_Engineering ORDER BY ? DESC LIMIT ?"
+  
+
+        self.cur.execute(query, (column,top_n,))
+
+        # If our query returns
+        line=self.cur.fetchall()
+        # print(line)
+        if line:
+            return line
+        else:
+            return False
+
+
+
+ 
     def add_session(self,session_id,username,expiry_time):
 
         query = "INSERT INTO Sessions (session_id,username,expiry_time) VALUES (?, ?, ?)"

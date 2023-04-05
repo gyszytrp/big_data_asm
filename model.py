@@ -17,12 +17,13 @@ import time
 import math
 from bottle import request,response,redirect
 import uuid
+from collections import Counter
 
 
 # Initialise our views, all arguments are defaults for the template
 
 SESSION_EXPIRATION_TIME = datetime.timedelta(minutes=30)
-
+catlist=["Cat__Thematic","Cat__Strategy","Cat__War","Cat__Family","Cat__CGS","Cat__Abstract","Cat__Party","Cat__Childrens","Cat__Other"]
 
 
 page_view = view.View()
@@ -39,6 +40,15 @@ else:
 
 
 
+# Get index of all attribute in certain db
+attributelist=database.view_attribute("Games_Feture_Engineering")
+attrdict={}
+
+for i in attributelist:
+
+    attrdict[i[1]]=i[0]
+
+    
 
 
 
@@ -69,7 +79,93 @@ def home():
     
     else:
 
-        return page_view("home",username="visitor",recommend_game_of_all_type="Default game for visitor",recommend_type="default cate in html form")
+        username="vistor"
+        # Generate category percentage
+
+        topgames=database.select_top_n_game_by_column(column="AvgRating",top_n="1000")
+
+        top_game_cate=[]
+
+
+        rank=1
+        for i in topgames:
+            dictgame={}
+            dictgame['rank']=rank
+            dictgame['name']=i[attrdict['Name']]
+
+
+
+            dictgame['description']=i[attrdict['Description']]
+
+
+
+            # If you want label category
+            for q in catlist:
+                print(i[attrdict[q]],q)
+                if i[attrdict[q]]=="1":
+                    print(q,i[attrdict[q]])
+                    dictgame['description']=q.lstrip("Cat__")
+                    top_game_cate.append(q.lstrip("Cat__"))
+
+
+
+            predictvalue=100-rank*5
+            dictgame['pop']=predictvalue
+            # print(i[attrdict['BGGId']])
+            dictgame['url']="/showgame?gameid={}".format(i[attrdict['BGGId']])
+            
+            
+
+            # calculate the percentage of each word
+            rank=rank+1
+
+
+
+
+
+
+        # count the occurrences of each word in the list
+        word_counts = Counter(top_game_cate)
+
+        # calculate the total count of all words
+        total_count = sum(word_counts.values())
+        percentages = {word: count / total_count * 100 for word, count in word_counts.items()}
+        sorted_words = sorted(percentages.items(), key=lambda item: item[1], reverse=True)
+        
+        print(sorted_words)
+        
+        
+        
+        
+        recommend_type_ls=[]
+        catrank=1
+        for word, count in sorted_words:
+            # print(word, count)
+            # percentage = (count / total_count) * 100
+            print(f"{word}: {count:.2f}%")
+
+
+            tmp=["<tr>","<td>","<h3>{}</h3>".format(catrank),
+                "</td>"
+                "<td>",
+                "<a href=\"/recommend_game_of_certain_type?username={}&gametype={}\"></a>".format(username,word),
+                "<h4>{}<br></h4>".format(word),
+                "<span>{:.2f}%</span>".format(count),
+                "</a>",
+                "</td>",
+                "</tr>"]
+
+            tmp2=''.join(tmp)
+            if catrank<3:
+                recommend_type_ls.append(tmp2)
+            catrank=catrank+1
+        recommend_type_ls=''.join(recommend_type_ls)
+
+
+
+        
+
+        return page_view("home",username=username,recommend_type=recommend_type_ls)
 
 
 
@@ -80,15 +176,53 @@ def recommend_game_of_certain_type(username,gametype):
     # Based on username, generate recommend game type and game in each type
 
 
+    #import model
+    # model.predict(username) 
+
+
     # Define a Python dictionary
     dat=[]
 
 
-    print(gametype)
+    attributelist=database.view_attribute("Games_Feture_Engineering")
 
 
 
-    if gametype=="ACT":
+    attrdict={}
+
+    for i in attributelist:
+
+        attrdict[i[1]]=i[0]
+
+
+
+    # print(gametype)
+
+
+
+    if gametype=="Other":
+
+
+        # topgames=database.select_top_n_game_by_column(column="AvgRating",top_n="20")
+
+        # rank=1
+        # for i in topgames:
+        #     dictgame={}
+        #     dictgame['rank']=rank
+        #     dictgame['name']=i[attrdict['Name']]
+        #     for q in catlist:
+        #         if i[attrdict[q]]==1:
+        #             dictgame['description']=q
+
+        #     predictvalue=90
+        #     dictgame['pop']=predictvalue
+        #     dictgame['url']="/showgame?gameid=".format(i[attrdict['BGGId']])
+        #     rank=rank+1
+        #     dat.append(dictgame)
+
+
+        # recommend_game_of_all_type=["<tr>","<td>2</td>","<td>Seikiro</td>","<td>ACT game</td>","<td><span class=\"status high\">42%</span></td>","<td>bggid</td>","</tr>"]
+
         dat = [
             {
                 "rank": "1",
@@ -110,34 +244,88 @@ def recommend_game_of_certain_type(username,gametype):
                 "description": "Very Hard game",
                 "pop":"30",
                 "url":"https://google.com"
-            }
-
-        ]
-    elif gametype==None:
-        dat = [
-            {
-                "rank": "1",
-                "name": "(Type: all)Most popular game 1 for visitor",
-                "description": "Hard game",
-                "pop":"90",
-                "url":"https://google.com"
             },
             {
-                "rank": "2",
-                "name": "(Type: all) Most popular game 2 for visitor",
-                "description": "Another Hard game",
-                "pop":"60",
+                "rank": "3",
+                "name": "Dark soul 1",
+                "description": "Very Hard game",
+                "pop":"30",
                 "url":"https://google.com"
             },
             {
                 "rank": "3",
-                "name": "(Type: all) Most popular game 3 for visitor",
+                "name": "Dark soul 1",
+                "description": "Very Hard game",
+                "pop":"30",
+                "url":"https://google.com"
+            },
+            {
+                "rank": "3",
+                "name": "Dark soul 1",
                 "description": "Very Hard game",
                 "pop":"30",
                 "url":"https://google.com"
             }
 
         ]
+
+    elif gametype==None:
+
+
+        topgames=database.select_top_n_game_by_column(column="AvgRating",top_n="20")
+
+        rank=1
+        for i in topgames:
+            dictgame={}
+            dictgame['rank']=rank
+            dictgame['name']=i[attrdict['Name']]
+
+
+
+            dictgame['description']=i[attrdict['Description']]
+
+
+
+            # If you want label category
+            # for q in catlist:
+            #     print(i[attrdict[q]],q)
+            #     if i[attrdict[q]]=="1":
+            #         print(q,i[attrdict[q]])
+            #         dictgame['description']=q.lstrip("Cat__")
+
+
+
+            predictvalue=100-rank*5
+            dictgame['pop']=predictvalue
+            # print(i[attrdict['BGGId']])
+            dictgame['url']="/showgame?gameid={}".format(i[attrdict['BGGId']])
+            rank=rank+1
+            dat.append(dictgame)
+
+        # dat = [
+        #     {
+        #         "rank": "1",
+        #         "name": "(Type: all)Most popular game 1 for visitor",
+        #         "description": "Hard game",
+        #         "pop":"90",
+        #         "url":"https://google.com"
+        #     },
+        #     {
+        #         "rank": "2",
+        #         "name": "(Type: all) Most popular game 2 for visitor",
+        #         "description": "Another Hard game",
+        #         "pop":"60",
+        #         "url":"https://google.com"
+        #     },
+        #     {
+        #         "rank": "3",
+        #         "name": "(Type: all) Most popular game 3 for visitor",
+        #         "description": "Very Hard game",
+        #         "pop":"30",
+        #         "url":"https://google.com"
+        #     }
+
+        # ]
 
 
 
@@ -174,6 +362,7 @@ def search(keyword):
             concatels=["<div class='"'merchant'"' onclick='"'showgame(this)'"'>",
                        "<img src='"'{}'"' alt='"'Merchant Image'"'>".format(i[attrdict['ImagePath']]),
                        "<div>"+"<h3>{}</h3>".format(i[attrdict['Name']]),
+                       "<h2 style=\"display: none;\">{}</h2>".format(i[attrdict['BGGId']]),
                        "<p>{}</p>".format(i[attrdict['Description']])
                        ,"</div>"+"</div>"]
             merchant_list=merchant_list+' '.join(concatels)
@@ -191,7 +380,7 @@ def search(keyword):
 
 
 
-def showgame(gamename):
+def showgame(gameid):
 
     attributelist=database.view_attribute("Games_Feture_Engineering")
 
@@ -205,7 +394,7 @@ def showgame(gamename):
 
 
 
-    result=database.get_specific_game(gamename)
+    result=database.get_specific_game_by_gameid(gameid)
 
 
     if result!=False:
@@ -216,7 +405,7 @@ def showgame(gamename):
 
 
 
-        return page_view("game",Name=gamename,picture_path=picture_path,Description=result[attrdict['Description']]
+        return page_view("game",gameid=gameid,Name=result[attrdict['Name']],picture_path=picture_path,Description=result[attrdict['Description']]
                          ,MinPlayers=result[attrdict['MinPlayers']],YearPublished=result[attrdict['YearPublished']]
                          ,MaxPlayers=result[attrdict['MaxPlayers']])
     

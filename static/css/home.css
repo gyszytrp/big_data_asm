@@ -259,3 +259,10 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.responseData table{
+  position: absolute;
+  top: 100px;
+}
+
+

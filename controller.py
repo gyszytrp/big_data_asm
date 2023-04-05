@@ -75,9 +75,9 @@ def search():
 
 @get('/showgame')
 def showgame():
-    gamename=request.query.gamename
+    gameid=request.query.gameid
 
-    return model.showgame(gamename)
+    return model.showgame(gameid)
 
 
 
@@ -177,7 +177,7 @@ def get_preference_from_profile():
 @app.get('/recommend_game_of_certain_type')
 @get('/recommend_game_of_certain_type')
 def recommend_game_of_type():
-    
+    print("!!!!!!!1!!11111")
     username=request.query.get("username")
     gametype=request.query.get("gametype")
     return model.recommend_game_of_certain_type(username,gametype)
