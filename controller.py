@@ -15,6 +15,7 @@ from myapp import app
 #-----------------------------------------------------------------------------
 
 # Allow image loading
+@app.route('/img/<picture:path>')
 @route('/img/<picture:path>')
 def serve_pictures(picture):
     '''
@@ -64,20 +65,35 @@ def serve_js(js):
 
 
 
-
+@app.get('/search')
 @get('/search')
 def search():
+    
     keyword=request.query.keyword
 
     return model.search(keyword)
 
 
-
+@app.get('/showgame')
 @get('/showgame')
 def showgame():
     gameid=request.query.gameid
 
     return model.showgame(gameid)
+
+
+
+
+@app.post('/showgame')
+@post('/showgame')
+def post_rate_to_server():
+        
+    data = request.json
+
+    print(data)
+
+    print(data['sessionid'])
+    # return model.showgame(gameid)
 
 
 

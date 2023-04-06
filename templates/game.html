@@ -8,7 +8,51 @@
 body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;background:linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);}*{box-sizing:border-box;}.container{width:80%;margin:auto;padding:2rem;background-color:#34495e;border-radius:1rem;box-shadow:0 0 10px rgba(0,0,0,0.1);}.game{display:grid;grid-template-columns:1fr 3fr;grid-gap:2rem;align-items:center;}.game img{width:100%;border-radius:0.5rem;box-shadow:0 0 10px rgba(0,0,0,0.1);}.game-info{display:grid;grid-template-rows:auto auto auto auto auto auto;grid-gap:1rem;}.game-info h2{margin:0;font-size:2rem;color:#ecf0f1;}.game-info p{margin:0;font-size:1.2rem;color:#bdc3c7;}.game-info span{font-weight:bold;color:#16a085;}.buttons, .hearts{display:flex;justify-content:flex-start;align-items:center;gap:1rem;}.btn, .heart{display:inline-block;padding:0.5rem 1rem;border-radius:0.5rem;background-color:#2980b9;color:#fff;text-decoration:none;text-align:center;font-weight:bold;}.btn:hover, .heart:hover{background-color:#971e69;}.heart{cursor:pointer;color:#fff;}
 </style>
 <script>
+
+
+
+
+function getCookieValue(cookieName) {
+  // split the cookies by semicolons
+  const cookies = document.cookie.split(';');
+
+  // loop through each cookie to find the one with the given name
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith(`${cookieName}=`)) {
+      // if the cookie is found, return its value
+      return cookie.substring(cookieName.length + 1);
+    }
+  }
+
+  // if the cookie is not found, return null
+  return null;
+}
+
+
+
+
+
+
+
 function updateScore(heart) {
+
+  const myCookieValue = getCookieValue("session_id");
+  if (myCookieValue) {
+    console.log(`The value of myCookie is ${myCookieValue}`);
+  } else {
+    console.log("Cookie not found");
+  }
+
+
+
+
+  const headingElement = document.getElementById("bggid");
+  const BGGId = headingElement.innerHTML;
+
+
+
+
   let scoreDisplay = document.getElementById('score');
   let score = 0;
   
@@ -21,7 +65,31 @@ function updateScore(heart) {
   }
   
   scoreDisplay.innerText = score;
+
+
+  const data = {
+            sessionid: myCookieValue,
+            BGGId: BGGId,
+            rate: score,
+          };
+
+
+  fetch('/showgame', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => {
+            console.log('Data sent successfully:', response);
+          })
+          .catch(error => {
+            console.error('Error sending data:', error);
+          });
 }
+
+
 </script>
 </head>
 <body>
@@ -30,6 +98,7 @@ function updateScore(heart) {
 ${picture_path}
 <div class="game-info">
 <h2>${Name}</h2>
+<h3 style="display: none;" id="bggid">${BGGId}</h3>
 <p>Description: <span>${Description}</span></p>
 <p>Year Published: <span>${YearPublished}</span></p>
 <p>Min Players: <span>${MinPlayers}</span></p>

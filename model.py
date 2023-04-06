@@ -52,6 +52,11 @@ for i in attributelist:
 
 
 
+def update_user_rate_for_game(userid,rate,bggid):
+    pass
+
+
+
 
 
 
@@ -101,9 +106,9 @@ def home():
 
             # If you want label category
             for q in catlist:
-                print(i[attrdict[q]],q)
+                # print(i[attrdict[q]],q)
                 if i[attrdict[q]]=="1":
-                    print(q,i[attrdict[q]])
+                    # print(q,i[attrdict[q]])
                     dictgame['description']=q.lstrip("Cat__")
                     top_game_cate.append(q.lstrip("Cat__"))
 
@@ -132,7 +137,7 @@ def home():
         percentages = {word: count / total_count * 100 for word, count in word_counts.items()}
         sorted_words = sorted(percentages.items(), key=lambda item: item[1], reverse=True)
         
-        print(sorted_words)
+        # print(sorted_words)
         
         
         
@@ -142,7 +147,7 @@ def home():
         for word, count in sorted_words:
             # print(word, count)
             # percentage = (count / total_count) * 100
-            print(f"{word}: {count:.2f}%")
+            # print(f"{word}: {count:.2f}%")
 
 
             tmp=["<tr>","<td>","<h3>{}</h3>".format(catrank),
@@ -156,8 +161,8 @@ def home():
                 "</tr>"]
 
             tmp2=''.join(tmp)
-            if catrank<3:
-                recommend_type_ls.append(tmp2)
+            
+            recommend_type_ls.append(tmp2)
             catrank=catrank+1
         recommend_type_ls=''.join(recommend_type_ls)
 
@@ -282,16 +287,16 @@ def recommend_game_of_certain_type(username,gametype):
 
 
 
-            dictgame['description']=i[attrdict['Description']]
+            # dictgame['description']=i[attrdict['Description']]
 
 
 
             # If you want label category
-            # for q in catlist:
-            #     print(i[attrdict[q]],q)
-            #     if i[attrdict[q]]=="1":
-            #         print(q,i[attrdict[q]])
-            #         dictgame['description']=q.lstrip("Cat__")
+            for q in catlist:
+                print(i[attrdict[q]],q)
+                if i[attrdict[q]]=="1":
+                    print(q,i[attrdict[q]])
+                    dictgame['description']=q.lstrip("Cat__")
 
 
 
@@ -398,7 +403,7 @@ def showgame(gameid):
 
 
     if result!=False:
-        print(result)
+        # print(result)
 
         
         picture_path="<img src=\" "+result[attrdict['ImagePath']]+"\" alt='"'Game Image'"'>"
@@ -407,7 +412,7 @@ def showgame(gameid):
 
         return page_view("game",gameid=gameid,Name=result[attrdict['Name']],picture_path=picture_path,Description=result[attrdict['Description']]
                          ,MinPlayers=result[attrdict['MinPlayers']],YearPublished=result[attrdict['YearPublished']]
-                         ,MaxPlayers=result[attrdict['MaxPlayers']])
+                         ,MaxPlayers=result[attrdict['MaxPlayers']],BGGId=result[attrdict['BGGId']])
     
     else:
         return page_view("game")

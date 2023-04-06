@@ -209,13 +209,16 @@ class SQLDatabase():
         
         self.cur.execute(f"PRAGMA table_info({table_name})")
 
-        # Print the table information
-        print("Column attributes for table:", table_name)
-        print("cid | name | type | notnull | dflt_value | pk")
+        ## Print the table information
+
+
+        
+        # print("Column attributes for table:", table_name)
+        # print("cid | name | type | notnull | dflt_value | pk")
 
         result=self.cur.fetchall()
-        for row in result:
-            print(row)
+        # for row in result:
+        #     print(row)
         return result
 
 
