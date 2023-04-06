@@ -10,6 +10,13 @@ import time
 from myapp import app
 
 
+
+
+# Input your data path as the parameter
+
+
+
+
 #-----------------------------------------------------------------------------
 # Static file paths
 #-----------------------------------------------------------------------------
@@ -103,7 +110,8 @@ def post_rate_to_server():
 @get('/home')
 def home():
 
-    # Handle right panel
+
+
     return model.home()
     # return static_file("hashtagtrend v2.html", root = "templates/")
 
@@ -193,8 +201,10 @@ def get_preference_from_profile():
 @app.get('/recommend_game_of_certain_type')
 @get('/recommend_game_of_certain_type')
 def recommend_game_of_type():
-    print("!!!!!!!1!!11111")
+    # print("!!!!!!!1!!11111")
+    
     username=request.query.get("username")
     gametype=request.query.get("gametype")
+    print(username,gametype)
     return model.recommend_game_of_certain_type(username,gametype)
 

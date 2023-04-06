@@ -18,6 +18,9 @@ import math
 from bottle import request,response,redirect
 import uuid
 from collections import Counter
+from CF_Recommend import cf_recommend
+
+cf=cf_recommend("./data")
 
 
 # Initialise our views, all arguments are defaults for the template
@@ -58,6 +61,14 @@ def update_user_rate_for_game(userid,rate,bggid):
 
 
 
+def check_game_type(ls):
+    for q in catlist:
+        if ls[attrdict[q]]=="1":
+        # print(q,i[attrdict[q]])
+            return q.lstrip("Cat__")
+
+    
+
 
 
 def home():
@@ -71,14 +82,75 @@ def home():
     if is_valid_session():
         session_id=request.get_cookie('session_id')
         print(database.retrieve_session_data(session_id)['username'])
-        print("!")
+
+
+
+
         username=database.retrieve_session_data(session_id)['username']
     
 
-        # Get what user like and return
-        
 
-        return page_view("home",username=username,recommend_game_of_all_type="game1 game2 game3 in html form",recommend_type="cate1,cate2,cate3 in html form")
+
+
+        # Get what user like and return
+
+
+        recommend_result=cf.recommend(user_id=float(username), top_n=200)
+        recommend_type_ls=[]
+        percentage_ls=[]
+
+
+        for index, row in recommend_result.iterrows():
+            # dictgame={}
+            # dictgame['rank']=index
+            # dictgame['name']=row['p_Name']
+            # dictgame['pop']=row['prediction']
+            # dictgame['url']="/showgame?gameid={}".format(row['p_BGGId'])
+
+
+
+            item=database.get_specific_game_by_gameid(row['p_BGGId'])
+            cat=check_game_type(item)
+            percentage_ls.append(cat)
+
+        total_categories = len(percentage_ls)
+        category_counts = {}
+        for category in percentage_ls:
+            if category in category_counts:
+                category_counts[category] += 1
+            else:
+                category_counts[category] = 1
+
+        category_percentages = {}
+        for category, count in category_counts.items():
+            category_percentages[category] = count / total_categories * 100
+
+        # Sort the percentage list by category
+        sorted_percentages = sorted(category_percentages.items(), key=lambda x: x[1],reverse=True)
+
+        # print(sorted_percentages)
+
+
+
+        for i in range(0,len(sorted_percentages)):
+            tmp=["<tr>","<td>","<h3>{}</h3>".format(i),
+                "</td>"
+                "<td>",
+                "<a href=\"/recommend_game_of_certain_type?username={}&gametype={}\"></a>".format(username,sorted_percentages[i][0]),
+                "<h4>{}<br></h4>".format(sorted_percentages[i][0]),
+                "<span>{:.2f}%</span>".format(sorted_percentages[i][1]),
+                "</a>",
+                "</td>",
+                "</tr>"]
+
+            tmp2=''.join(tmp)
+        
+            recommend_type_ls.append(tmp2)
+
+        recommend_type_ls=''.join(recommend_type_ls)
+
+
+        return page_view("home",username=username,recommend_type=recommend_type_ls)
         
         
     
@@ -178,26 +250,31 @@ def home():
 
 def recommend_game_of_certain_type(username,gametype):
 
+
     # Based on username, generate recommend game type and game in each type
 
-
-    #import model
-    # model.predict(username) 
-
+    session_id=request.get_cookie('session_id')
+    if session_id!=None:
+        try:
+            username=database.retrieve_session_data(session_id)['username']
+        except:
+            username="visitor"
+    else:
+        username="visitor"
 
     # Define a Python dictionary
     dat=[]
 
 
-    attributelist=database.view_attribute("Games_Feture_Engineering")
+    # attributelist=database.view_attribute("Games_Feture_Engineering")
 
 
 
-    attrdict={}
+    # attrdict={}
 
-    for i in attributelist:
+    # for i in attributelist:
 
-        attrdict[i[1]]=i[0]
+    #     attrdict[i[1]]=i[0]
 
 
 
@@ -205,7 +282,7 @@ def recommend_game_of_certain_type(username,gametype):
 
 
 
-    if gametype=="Other":
+    if gametype=="Family":
 
 
         # topgames=database.select_top_n_game_by_column(column="AvgRating",top_n="20")
@@ -274,7 +351,7 @@ def recommend_game_of_certain_type(username,gametype):
 
         ]
 
-    elif gametype==None:
+    elif gametype==None and username=="visitor":
 
 
         topgames=database.select_top_n_game_by_column(column="AvgRating",top_n="20")
@@ -293,9 +370,9 @@ def recommend_game_of_certain_type(username,gametype):
 
             # If you want label category
             for q in catlist:
-                print(i[attrdict[q]],q)
+                # print(i[attrdict[q]],q)
                 if i[attrdict[q]]=="1":
-                    print(q,i[attrdict[q]])
+                    # print(q,i[attrdict[q]])
                     dictgame['description']=q.lstrip("Cat__")
 
 
@@ -331,6 +408,55 @@ def recommend_game_of_certain_type(username,gametype):
         #     }
 
         # ]
+
+    elif username!="visitor" and gametype==None:
+        """# 3. Recommendation"""
+        recommend_result=cf.recommend(user_id=float(username), top_n=20)
+        for index, row in recommend_result.iterrows():
+            dictgame={}
+            dictgame['rank']=index
+            dictgame['name']=row['p_Name']
+
+            item=database.get_specific_game_by_gameid(row['p_BGGId'])
+            cat=check_game_type(item)
+
+            # print(row['p_Name'],type(row['p_Name']))
+            dictgame["description"]=cat
+            dictgame['pop']="{:.2f}".format(float(row['prediction'])*10)
+            dictgame['url']="/showgame?gameid={}".format(row['p_BGGId'])
+
+
+
+            dat.append(dictgame)
+
+
+    elif username!="visitor" and gametype!=None and ("Cat__"+gametype) in catlist:
+        
+
+        # Recommend first, return based on gametype
+        
+        """# 3. Recommendation"""
+        recommend_result=cf.recommend(user_id=float(username), top_n=200)
+        count=0
+
+        for index, row in recommend_result.iterrows():
+            item=database.get_specific_game_by_gameid(row['p_BGGId'])
+            cat=check_game_type(item)
+            if count < 20 and cat ==gametype:
+                dictgame={}
+                dictgame['rank']=index
+                dictgame['name']=row['p_Name']
+
+                # print(row['p_Name'],type(row['p_Name']))
+                dictgame["description"]=cat
+                dictgame['pop']="{:.2f}".format(float(row['prediction'])*10)
+                dictgame['url']="/showgame?gameid={}".format(row['p_BGGId'])
+                dat.append(dictgame)
+
+                count+=1
+            else:
+                continue
+
 
 
 
